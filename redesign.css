@@ -36,10 +36,10 @@ button:active,a.primary-link:active{transform:translateY(1px) scale(.99)}
 .hero h1 em{position:relative;color:var(--accent);font-style:normal}.hero h1 em::after{content:"";position:absolute;left:1%;right:0;bottom:-5px;height:4px;background:var(--accent);transform:rotate(-1deg)}
 .hero>div>p:not(.eyebrow){max-width:500px;margin:0;color:#555550;font-size:18px;line-height:1.75;word-break:keep-all}
 .primary-link,.generate{min-height:52px;border-radius:var(--radius-control);background:var(--ink);color:#fff;padding:14px 21px;box-shadow:0 8px 0 #bdbbb3;font-weight:900}.primary-link:hover,.generate:hover{background:var(--accent);box-shadow:0 8px 0 #c7a69b;transform:translateY(-2px)}
-.hero-visual{position:relative;min-height:520px;max-height:650px;border:1px solid var(--line-strong);border-radius:var(--radius);background:#cbd3c6;box-shadow:12px 12px 0 var(--ink);transform:rotate(1.2deg)}
+.hero-visual{position:relative;min-height:520px;max-height:650px;border:1px solid var(--line-strong);border-radius:var(--radius);background:#eeece5;box-shadow:12px 12px 0 var(--ink);transform:rotate(1.2deg)}
 .hero-visual::before{content:"오늘의 주인공";position:absolute;z-index:2;left:18px;top:18px;padding:8px 10px;border-radius:8px;background:var(--ink);color:#fff;font-size:11px;font-weight:900;letter-spacing:.04em}
 .hero-visual::after{content:"첫 3초부터 사건 시작";position:absolute;z-index:2;right:16px;bottom:16px;max-width:150px;padding:12px;border-radius:10px;background:var(--accent);color:#fff;font-size:14px;font-weight:900;line-height:1.35;box-shadow:5px 5px 0 var(--ink)}
-.hero-visual img{height:min(64vw,620px);min-height:520px;filter:saturate(.9) contrast(1.03)}
+.hero-visual img{height:min(64vw,620px);min-height:520px;object-fit:contain;object-position:center;background:#eeece5;filter:saturate(.9) contrast(1.03)}
 
 .maker,.tips,.sources{max-width:1320px;padding:104px 24px}
 .maker{padding-top:118px}.section-heading{display:grid;grid-template-columns:112px minmax(0,720px);gap:28px;align-items:start;margin-bottom:42px}
