@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="simulator.css">
   <link rel="stylesheet" href="uploads.css?v=20260928-13">
-  <link rel="stylesheet" href="codex-connect.css">
+  <link rel="stylesheet" href="codex-connect.css?v=20260928-15">
   <link rel="stylesheet" href="game-ui.css">
   <link rel="stylesheet" href="redesign.css?v=20260928-14">
 </head>
@@ -187,19 +187,23 @@
     </section>
 
     <section class="codex-connect" id="codexConnect" aria-labelledby="codex-title">
-      <div class="codex-heading">
-        <div><span class="badge">로컬 개발 연결</span><h2 id="codex-title">프로그램 수정 요청</h2></div>
-        <span class="connection-state" id="codexState">연결 확인 중</span>
-      </div>
-      <p>원하는 변경 내용을 입력하면 먼저 수정 범위와 위험 요소를 검토합니다. 검토 후 적용 버튼을 눌러야 실제 파일이 변경됩니다.</p>
-      <label for="codexRequest">수정 요청 내용</label>
-      <textarea id="codexRequest" rows="5" placeholder="예: 음식점 업태에는 메뉴 사진을 첫 3초에 우선 배치하고, 영상 자막 크기를 키워줘"></textarea>
-      <div class="codex-actions">
-        <button type="button" id="codexPreview">수정안 검토</button>
-        <button type="button" id="codexApply" disabled>검토한 수정 적용</button>
-      </div>
-      <div class="codex-output" id="codexOutput" aria-live="polite">수정 요청을 입력하면 검토 결과가 여기에 표시됩니다.</div>
-      <small>적용 범위: 현재 프로그램 폴더 · 적용 전 자동 백업 · 외부 명령 직접 실행 불가</small>
+      <details class="codex-panel">
+        <summary class="codex-heading">
+          <div><span class="badge">로컬 개발 연결</span><h2 id="codex-title">프로그램 수정 요청</h2></div>
+          <div class="codex-summary-state"><span class="connection-state" id="codexState">연결 확인 중</span><span class="codex-toggle" aria-hidden="true"></span></div>
+        </summary>
+        <div class="codex-body">
+          <p>원하는 변경 내용을 입력하면 먼저 수정 범위와 위험 요소를 검토합니다. 검토 후 적용 버튼을 눌러야 실제 파일이 변경됩니다.</p>
+          <label for="codexRequest">수정 요청 내용</label>
+          <textarea id="codexRequest" rows="5" placeholder="예: 음식점 업태에는 메뉴 사진을 첫 3초에 우선 배치하고, 영상 자막 크기를 키워줘"></textarea>
+          <div class="codex-actions">
+            <button type="button" id="codexPreview">수정안 검토</button>
+            <button type="button" id="codexApply" disabled>검토한 수정 적용</button>
+          </div>
+          <div class="codex-output" id="codexOutput" aria-live="polite">수정 요청을 입력하면 검토 결과가 여기에 표시됩니다.</div>
+          <small>적용 범위: 현재 프로그램 폴더 · 적용 전 자동 백업 · 외부 명령 직접 실행 불가</small>
+        </div>
+      </details>
     </section>
 
     <section class="tips" id="tips" aria-labelledby="tips-title">
