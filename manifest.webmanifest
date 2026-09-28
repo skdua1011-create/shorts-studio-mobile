@@ -1,0 +1,14 @@
+{
+  "name": "사장님 숏츠 기획실",
+  "short_name": "숏츠 기획실",
+  "description": "매장 촬영 자료로 숏츠 촬영 시나리오를 구성하는 현장 도구",
+  "start_url": "./?mobile=1&source=install#maker",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3f2ee",
+  "theme_color": "#181817",
+  "orientation": "portrait-primary",
+  "icons": [
+    {"src": "./app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}
