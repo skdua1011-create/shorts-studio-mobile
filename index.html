@@ -13,16 +13,16 @@
   <title>사장님 숏츠 기획실</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="simulator.css">
-  <link rel="stylesheet" href="uploads.css?v=20260928-9">
+  <link rel="stylesheet" href="uploads.css?v=20260928-13">
   <link rel="stylesheet" href="codex-connect.css">
   <link rel="stylesheet" href="game-ui.css">
-  <link rel="stylesheet" href="redesign.css?v=20260928-12">
+  <link rel="stylesheet" href="redesign.css?v=20260928-13">
 </head>
 <body>
   <header class="topbar">
     <a class="brand" href="#maker" aria-label="사장님 숏츠 기획실 홈">사장님 숏츠 기획실</a>
     <nav aria-label="주요 메뉴">
-      <a href="#maker">기획 만들기</a><a href="#tips">노출 팁</a><a href="#sources">근거</a>
+      <a href="#basicInfo">기본정보</a><a href="#mediaUpload">사진·영상</a><a href="#conceptSetup">콘셉트</a><a href="#result">결과</a>
     </nav>
   </header>
 
@@ -78,11 +78,14 @@
           </ol>
         </aside>
         <div class="work-panel">
-          <div class="work-panel-head"><div><span>기획 작업대</span><h3>실제 작업 내용</h3></div><b id="workPanelState">입력 대기</b></div>
-          <div class="project-tools" aria-label="작업 관리"><span id="draftStatus">자동저장 준비</span><button type="button" id="fillExample">예시 입력</button><button type="button" id="toggleCrew">작업실 접기</button><button type="button" id="saveDraft">임시저장</button><button type="button" id="loadDraft">불러오기</button><button type="button" id="exportPlan">기획서 저장</button></div>
+          <div class="work-panel-head"><div><span>기획 작업대</span><h3>가게 숏츠 만들기</h3></div><b id="workPanelState">입력 대기</b></div>
+          <nav class="maker-steps" aria-label="기획 입력 순서"><a href="#basicInfo"><b>1</b>기본정보</a><a href="#mediaUpload"><b>2</b>사진·영상</a><a href="#conceptSetup"><b>3</b>콘셉트</a><a href="#result"><b>4</b>결과</a></nav>
+          <div class="project-tools" aria-label="작업 관리"><span id="draftStatus">자동저장 준비</span><button type="button" id="fillExample">예시 입력</button><details class="project-menu"><summary>저장·불러오기</summary><div><button type="button" id="saveDraft">임시저장</button><button type="button" id="loadDraft">불러오기</button><button type="button" id="exportPlan">기획서 저장</button><button type="button" id="toggleCrew">작업실 접기</button></div></details></div>
           <div class="mobile-link-bar"><div><b>휴대폰 촬영 주소</b><span id="mobileUrl">주소 확인 중</span></div><button type="button" id="copyMobileUrl">주소 복사</button></div>
       <div class="workspace">
         <form id="briefForm" novalidate>
+          <section class="form-section" id="basicInfo" aria-labelledby="basicInfoTitle">
+          <div class="form-section-title"><b>1</b><div><h4 id="basicInfoTitle">기본정보</h4><p>상호와 홍보할 내용을 입력하세요.</p></div></div>
           <div class="field">
             <label for="businessName">상호명 <strong>필수</strong></label>
             <input id="businessName" name="businessName" autocomplete="organization" placeholder="예: 더엠헤어" required maxlength="40">
@@ -102,37 +105,43 @@
             <label for="product">홍보 제품 또는 서비스 <strong>필수</strong></label>
             <input id="product" name="product" placeholder="예: 손상모 복구 클리닉" required maxlength="70">
           </div>
+          </section>
+          <section class="form-section" id="mediaUpload" aria-labelledby="mediaUploadTitle">
+          <div class="form-section-title"><b>2</b><div><h4 id="mediaUploadTitle">사진·영상 등록</h4><p>아래 버튼을 순서대로 누르면 됩니다.</p></div></div>
           <div class="field asset-field">
-            <label for="promoAssets">홍보 자료 첨부</label>
-            <div class="sign-analyzer">
-              <div class="mobile-capture-head"><b>간판 촬영·업태 추천</b><span id="signAnalysisState">촬영 대기</span></div>
+            <details class="sign-analyzer">
+              <summary><span><b>간판으로 업태 찾기</b><small>상호 간판 사진 1장</small></span><em id="signAnalysisState">촬영 대기</em></summary>
+              <div class="details-body">
               <p>간판을 촬영하면 기기에서 글자 인식을 시도합니다. 인식 결과를 확인한 뒤 업태 추천을 적용하세요.</p>
               <label class="sign-capture"><input id="signPhoto" type="file" accept="image/*" capture="environment">상호 간판 촬영</label>
               <input id="signText" type="text" placeholder="인식된 간판 글자 또는 상호를 확인·수정" maxlength="100">
               <div class="sign-actions"><button type="button" id="analyzeSign">업태 추천</button><button type="button" id="applyIndustrySuggestion" disabled>추천 적용</button></div>
               <div id="industrySuggestion" class="industry-suggestion" aria-live="polite">간판 사진 또는 글자를 입력하면 업태 후보가 표시됩니다.</div>
-            </div>
-            <div class="mobile-capture" aria-labelledby="mobileCaptureTitle">
-              <div class="mobile-capture-head"><b id="mobileCaptureTitle">휴대폰 현장 촬영</b><span id="captureProgress">필수 자료 0/4</span></div>
-              <p>각 항목을 눌러 현재 매장과 실제 제품을 촬영하세요. 촬영 파일은 이 기기에서만 처리합니다.</p>
-              <div class="capture-grid">
-                <label><input type="file" accept="image/*" capture="environment" data-capture-role="0" data-capture-label="매장 외관">매장 외관 촬영</label>
-                <label><input type="file" accept="image/*" capture="environment" data-capture-role="0" data-capture-label="매장 내부">매장 내부 촬영</label>
-                <label><input type="file" accept="image/*" capture="environment" data-capture-role="2" data-capture-label="실제 제품">실제 제품 촬영</label>
-                <label><input type="file" accept="video/*" capture="environment" data-capture-role="3" data-capture-label="조리 과정">조리 과정 촬영</label>
-                <label><input type="file" accept="image/*" capture="user" data-capture-role="1" data-capture-label="출연자 기준">출연자 기준 촬영</label>
-                <label><input type="file" accept="video/*" capture="environment" data-capture-role="4" data-capture-label="한입 반응">한입 반응 촬영</label>
               </div>
+            </details>
+            <div class="mobile-capture" aria-labelledby="mobileCaptureTitle">
+              <div class="mobile-capture-head"><b id="mobileCaptureTitle">필수 촬영</b><span id="captureProgress">0/4 완료</span></div>
+              <p>매장, 제품, 과정, 출연자 자료를 준비하면 실제 가게에 맞는 장면표를 만들 수 있습니다.</p>
+              <div class="capture-grid">
+                <label><b>매장</b><span>외관 또는 내부</span><input type="file" accept="image/*" capture="environment" data-capture-role="0" data-capture-label="매장 외관"></label>
+                <label><b>제품</b><span>메뉴 또는 서비스</span><input type="file" accept="image/*" capture="environment" data-capture-role="2" data-capture-label="실제 제품"></label>
+                <label><b>과정</b><span>조리 또는 작업</span><input type="file" accept="video/*" capture="environment" data-capture-role="3" data-capture-label="조리 과정"></label>
+                <label><b>출연자</b><span>사장님 또는 직원</span><input type="file" accept="image/*" capture="user" data-capture-role="1" data-capture-label="출연자 기준"></label>
+              </div>
+              <details class="optional-capture"><summary>선택 촬영 추가</summary><div><label><input type="file" accept="image/*" capture="environment" data-capture-role="0" data-capture-label="매장 내부">매장 내부 추가</label><label><input type="file" accept="video/*" capture="environment" data-capture-role="4" data-capture-label="한입 반응">고객 반응 추가</label></div></details>
             </div>
             <label class="asset-drop" id="assetDrop" for="promoAssets">
               <input id="promoAssets" type="file" accept="image/*,video/*" multiple>
-              <b>사진·영상을 끌어놓거나 눌러서 선택</b>
-              <span>매장, 제품, 작업 과정, 전·후 자료를 함께 올리면 장면별로 자동 배치합니다.</span>
+              <b>이미 찍은 파일 선택</b>
+              <span>사진과 영상을 한 번에 여러 개 선택할 수 있습니다.</span>
             </label>
             <div class="asset-list" id="assetList" aria-live="polite"></div>
             <div class="asset-status" id="assetStatus" aria-live="polite"></div>
-            <small>파일은 이 브라우저 안에서만 분석하며 외부로 전송하지 않습니다.</small>
+            <small class="privacy-note">등록한 파일은 이 기기 안에서만 처리됩니다.</small>
           </div>
+          </section>
+          <section class="form-section" id="conceptSetup" aria-labelledby="conceptSetupTitle">
+          <div class="form-section-title"><b>3</b><div><h4 id="conceptSetupTitle">콘셉트 설정</h4><p>고객, 강조 내용, 분위기를 정하세요.</p></div></div>
           <div class="field">
             <label for="audience">주요 고객</label>
             <input id="audience" name="audience" placeholder="예: 염색과 펌으로 모발이 손상된 20-40대" maxlength="100">
@@ -164,6 +173,7 @@
             </select>
             <small>얼굴 비하가 아닌 표정·헤어·조명·자세 변화로 연출합니다.</small>
           </div>
+          </section>
           <p class="form-error" id="formError" role="alert"></p>
           <button class="generate" type="submit">촬영 시나리오 만들기</button>
         </form>
