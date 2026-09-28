@@ -68,7 +68,7 @@ window.addEventListener('beforeunload',()=>uploadedAssets.forEach(asset=>URL.rev
 
 const industrySelect=document.querySelector('#industry');
 industries.forEach(item=>industrySelect.add(new Option(item.name,item.id)));
-document.querySelector('#knowledgeCount').textContent=knowledgeBase.length;
+const knowledgeCount=document.querySelector('#knowledgeCount');if(knowledgeCount)knowledgeCount.textContent=knowledgeBase.length;
 const beautyOption=document.querySelector('#beautyOption');
 function syncBeautyOption(){
  const enabled=['hair','beauty'].includes(industrySelect.value);
