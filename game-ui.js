@@ -12,7 +12,7 @@ const gameStates={
  filming:['영상 흐름 확인 중','카메라와 자막 타이밍을 확인합니다.',88,3,'미리보기 재생'],
  complete:['업무 완료','30초 기획이 완성됐습니다. 결과를 확인하세요.',100,3,'기획 완료']
 };
-function setWorkerState(state){const data=gameStates[state]||gameStates.idle;workerWorld.dataset.state=state;workerStatus.textContent=data[0];workerSpeech.textContent=data[1];workerMeter.style.width=`${data[2]}%`;workPanelState.textContent=data[4];questItems.forEach((item,index)=>{item.classList.toggle('active',index===data[3]);item.classList.toggle('done',index<data[3]||state==='complete')})}
+function setWorkerState(state){const data=gameStates[state]||gameStates.idle;workerWorld.dataset.state=state;workerStatus.textContent=data[0];workerSpeech.textContent=data[1];workerMeter.style.width=`${data[2]}%`;if(workPanelState)workPanelState.textContent=data[4];questItems.forEach((item,index)=>{item.classList.toggle('active',index===data[3]);item.classList.toggle('done',index<data[3]||state==='complete')})}
 window.gameWorker={setState:setWorkerState};
 document.querySelector('#briefForm').addEventListener('input',()=>setWorkerState('collecting'));
 document.querySelector('#promoAssets').addEventListener('change',()=>setWorkerState('scanning'));
