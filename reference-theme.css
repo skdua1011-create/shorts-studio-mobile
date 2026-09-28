@@ -21,7 +21,7 @@ body::before{background-image:none;mask-image:none}
 body::after{content:"";position:fixed;z-index:-2;right:-12vw;top:9rem;width:38vw;height:38vw;border-radius:50%;background:#eef0ff;pointer-events:none}
 
 .topbar{height:74px;border-bottom:1px solid rgba(203,210,229,.72);background:rgba(255,255,255,.94);box-shadow:0 6px 26px rgba(43,61,151,.05)}
-.brand{color:var(--ink);font-weight:900}.brand::before{border-radius:10px;background:var(--accent);box-shadow:0 8px 18px rgba(66,91,232,.25)}
+.brand{color:var(--ink);font-weight:900}.brand::before{content:none;display:none}
 .topbar nav a{color:#626c88}.topbar nav a:hover{background:var(--soft);color:var(--accent-strong)}
 .top-tools button{border-color:var(--line);background:#fff;color:#3e4968;box-shadow:0 5px 14px rgba(43,61,151,.06)}
 .top-tools button:hover{border-color:#aeb9ef;color:var(--accent-strong);transform:translateY(-1px)}
@@ -59,7 +59,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(66,91,232,.14);bo
 .asset-item{border-color:var(--line);border-radius:14px;background:#fff;box-shadow:0 6px 18px rgba(43,61,151,.05)}
 .capture-actions button,.asset-drop button{border-color:#c8d0ed;color:var(--accent-strong)}
 
-.result.empty{border-color:var(--line);background:#fff}.empty-state span{background:var(--soft);color:var(--accent)}
+.result.empty{border-color:var(--line);background:#fff}.empty-state h2{margin-top:0}.empty-state span{background:var(--soft);color:var(--accent)}
 .result-head{border-color:var(--line)}.copy-btn{border-color:var(--line);background:#f8f9ff;color:var(--accent-strong)}
 .scene{border:1px solid var(--line);background:#f8f9ff}.scene time{color:var(--accent)}
 .prompt-box pre,.codex-output{background:#171f42;color:#f7f8ff}
