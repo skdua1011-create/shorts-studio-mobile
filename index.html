@@ -16,14 +16,24 @@
   <link rel="stylesheet" href="uploads.css?v=20260928-13">
   <link rel="stylesheet" href="codex-connect.css?v=20260928-15">
   <link rel="stylesheet" href="game-ui.css">
-  <link rel="stylesheet" href="redesign.css?v=20260928-17">
+  <link rel="stylesheet" href="redesign.css?v=20260928-18">
 </head>
 <body>
+  <div class="app-splash" id="appSplash" role="status" aria-label="서비스 소개">
+    <img src="main-visual.png" alt="">
+    <p>30초 광고 기획 도구</p>
+    <h1>평범한 가게 이야기를<br><em>멈춰 보게</em> 만듭니다.</h1>
+    <span>작업 화면을 준비하고 있습니다.</span>
+  </div>
   <header class="topbar">
     <a class="brand" href="#maker" aria-label="사장님 숏츠 기획실 홈">사장님 숏츠 기획실</a>
     <nav aria-label="주요 메뉴">
       <a href="#basicInfo">기본정보</a><a href="#mediaUpload">사진·영상</a><a href="#conceptSetup">콘셉트</a><a href="#result">결과</a>
     </nav>
+    <div class="top-tools" aria-label="보조 메뉴">
+      <button type="button" data-panel-target="codexConnect" aria-expanded="false">수정 요청</button>
+      <button type="button" data-panel-target="helpPanel" aria-expanded="false">도움말</button>
+    </div>
   </header>
 
   <main>
@@ -31,21 +41,6 @@
       <summary><span class="compact-title"><img src="app-icon.svg" alt=""><b>휴대폰 앱처럼 사용</b></span><span class="compact-toggle" aria-hidden="true"></span></summary>
       <div class="install-body"><span id="installStatus">홈 화면에 추가하면 주소 입력 없이 바로 실행됩니다.</span><button type="button" id="installApp">홈 화면에 추가</button></div>
     </details>
-    <details class="compact-panel intro-panel">
-      <summary><span><b>서비스 소개</b><small>대표 이미지와 사용 안내</small></span><span class="compact-toggle" aria-hidden="true"></span></summary>
-      <section class="hero" aria-labelledby="hero-title">
-        <div>
-          <p class="eyebrow">30초 광고 기획 도구</p>
-          <h1 id="hero-title">평범한 가게 이야기를<br><em>멈춰 보게</em> 만듭니다.</h1>
-          <p>상호와 제품을 입력하면 촬영 가능한 장면표, 대사, 장면별 생성 보조 입력과 불합격 기준을 구성합니다.</p>
-          <a class="primary-link" href="#maker">바로 기획하기</a>
-        </div>
-        <figure class="hero-visual">
-          <img src="main-visual.png" alt="노란 원 안에 초록색 잎 모양이 있는 대표 이미지">
-        </figure>
-      </section>
-    </details>
-
     <section class="maker" id="maker" aria-labelledby="maker-title">
       <div class="section-heading">
         <span class="count" id="knowledgeCount">800</span>
@@ -188,8 +183,8 @@
       </div>
     </section>
 
-    <section class="codex-connect" id="codexConnect" aria-labelledby="codex-title">
-      <details class="codex-panel">
+    <section class="codex-connect top-drawer" id="codexConnect" aria-labelledby="codex-title" hidden>
+      <details class="codex-panel" open>
         <summary class="codex-heading">
           <div><span class="badge">로컬 개발 연결</span><h2 id="codex-title">프로그램 수정 요청</h2></div>
           <div class="codex-summary-state"><span class="connection-state" id="codexState">연결 확인 중</span><span class="codex-toggle" aria-hidden="true"></span></div>
@@ -208,7 +203,7 @@
       </details>
     </section>
 
-    <details class="compact-panel help-panel">
+    <details class="compact-panel help-panel top-drawer" id="helpPanel" open hidden>
       <summary><span><b>운영 도움말</b><small>노출 원칙과 공식 안내</small></span><span class="compact-toggle" aria-hidden="true"></span></summary>
       <div class="help-body">
         <section class="tips" id="tips" aria-labelledby="tips-title">
@@ -239,6 +234,7 @@
   <script src="codex-connect.js"></script>
   <script src="game-ui.js"></script>
   <script src="project-tools.js?v=20260928-10"></script>
-  <script src="pwa.js?v=20260928-13"></script>
+  <script src="pwa.js?v=20260928-14"></script>
+  <script src="ui-shell.js?v=20260928-1"></script>
 </body>
 </html>
