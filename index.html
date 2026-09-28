@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="uploads.css?v=20260928-13">
   <link rel="stylesheet" href="codex-connect.css?v=20260928-15">
   <link rel="stylesheet" href="game-ui.css">
-  <link rel="stylesheet" href="redesign.css?v=20260928-14">
+  <link rel="stylesheet" href="redesign.css?v=20260928-16">
 </head>
 <body>
   <header class="topbar">
@@ -27,22 +27,24 @@
   </header>
 
   <main>
-    <section class="install-panel" id="installPanel" aria-label="홈 화면 설치">
-      <img src="app-icon.svg" alt="">
-      <div><b>휴대폰 앱처럼 사용</b><span id="installStatus">홈 화면에 추가하면 주소 입력 없이 바로 실행됩니다.</span></div>
-      <button type="button" id="installApp">홈 화면에 추가</button>
-    </section>
-    <section class="hero" aria-labelledby="hero-title">
-      <div>
-        <p class="eyebrow">30초 광고 기획 도구</p>
-        <h1 id="hero-title">평범한 가게 이야기를<br><em>멈춰 보게</em> 만듭니다.</h1>
-        <p>상호와 제품을 입력하면 촬영 가능한 장면표, 대사, 장면별 생성 보조 입력과 불합격 기준을 구성합니다.</p>
-        <a class="primary-link" href="#maker">바로 기획하기</a>
-      </div>
-      <figure class="hero-visual">
-        <img src="main-visual.png" alt="노란 원 안에 초록색 잎 모양이 있는 대표 이미지">
-      </figure>
-    </section>
+    <details class="compact-panel install-panel" id="installPanel">
+      <summary><span class="compact-title"><img src="app-icon.svg" alt=""><b>휴대폰 앱처럼 사용</b></span><span class="compact-toggle" aria-hidden="true"></span></summary>
+      <div class="install-body"><span id="installStatus">홈 화면에 추가하면 주소 입력 없이 바로 실행됩니다.</span><button type="button" id="installApp">홈 화면에 추가</button></div>
+    </details>
+    <details class="compact-panel intro-panel">
+      <summary><span><b>서비스 소개</b><small>대표 이미지와 사용 안내</small></span><span class="compact-toggle" aria-hidden="true"></span></summary>
+      <section class="hero" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow">30초 광고 기획 도구</p>
+          <h1 id="hero-title">평범한 가게 이야기를<br><em>멈춰 보게</em> 만듭니다.</h1>
+          <p>상호와 제품을 입력하면 촬영 가능한 장면표, 대사, 장면별 생성 보조 입력과 불합격 기준을 구성합니다.</p>
+          <a class="primary-link" href="#maker">바로 기획하기</a>
+        </div>
+        <figure class="hero-visual">
+          <img src="main-visual.png" alt="노란 원 안에 초록색 잎 모양이 있는 대표 이미지">
+        </figure>
+      </section>
+    </details>
 
     <section class="maker" id="maker" aria-labelledby="maker-title">
       <div class="section-heading">
@@ -206,26 +208,30 @@
       </details>
     </section>
 
-    <section class="tips" id="tips" aria-labelledby="tips-title">
-      <h2 id="tips-title">노출을 높이는 실행 원칙</h2>
-      <div class="tip-grid">
-        <article><b>첫 장면부터 사건 시작</b><p>소개부터 하지 말고 문제 상황이나 낯선 행동을 즉시 보여줍니다.</p></article>
-        <article><b>세로 화면과 안전 영역</b><p>9:16 화면을 쓰고 상호명, 가격, 행동 유도 문구는 UI에 가리지 않게 중앙에 둡니다.</p></article>
-        <article><b>댓글이 다음 편이 되게</b><p>선택형 질문을 던지고 실제 댓글을 다음 숏츠의 소재로 연결합니다.</p></article>
-        <article><b>한 번에 여러 편 촬영</b><p>같은 장소와 인물로 도입부만 바꾼 여러 버전을 묶어 촬영합니다.</p></article>
+    <details class="compact-panel help-panel">
+      <summary><span><b>운영 도움말</b><small>노출 원칙과 공식 안내</small></span><span class="compact-toggle" aria-hidden="true"></span></summary>
+      <div class="help-body">
+        <section class="tips" id="tips" aria-labelledby="tips-title">
+          <h2 id="tips-title">노출을 높이는 실행 원칙</h2>
+          <div class="tip-grid">
+            <article><b>첫 장면부터 사건 시작</b><p>소개부터 하지 말고 문제 상황이나 낯선 행동을 즉시 보여줍니다.</p></article>
+            <article><b>세로 화면과 안전 영역</b><p>9:16 화면을 쓰고 상호명, 가격, 행동 유도 문구는 UI에 가리지 않게 중앙에 둡니다.</p></article>
+            <article><b>댓글이 다음 편이 되게</b><p>선택형 질문을 던지고 실제 댓글을 다음 숏츠의 소재로 연결합니다.</p></article>
+            <article><b>한 번에 여러 편 촬영</b><p>같은 장소와 인물로 도입부만 바꾼 여러 버전을 묶어 촬영합니다.</p></article>
+          </div>
+        </section>
+        <section class="sources" id="sources" aria-labelledby="sources-title">
+          <h2 id="sources-title">운영 근거</h2>
+          <p>플랫폼 공식 안내를 우선 반영합니다. 노출을 보장하는 공식은 없으므로 게시 후 유지율과 반응을 확인해 다음 기획에 반영해야 합니다.</p>
+          <div class="source-links">
+            <a href="https://support.google.com/youtube/answer/12948118" target="_blank" rel="noreferrer">YouTube 모바일 촬영 안내</a>
+            <a href="https://support.google.com/youtube/answer/13616979" target="_blank" rel="noreferrer">YouTube 업로드 일정 안내</a>
+            <a href="https://www.facebook.com/business/ads/facebook-instagram-reels-ads" target="_blank" rel="noreferrer">Meta Reels 광고 안내</a>
+            <a href="https://www.facebook.com/help/instagram/402084904469945" target="_blank" rel="noreferrer">Instagram 음악 사용 안내</a>
+          </div>
+        </section>
       </div>
-    </section>
-
-    <section class="sources" id="sources" aria-labelledby="sources-title">
-      <h2 id="sources-title">운영 근거</h2>
-      <p>플랫폼 공식 안내를 우선 반영합니다. 노출을 보장하는 공식은 없으므로 게시 후 유지율과 반응을 확인해 다음 기획에 반영해야 합니다.</p>
-      <div class="source-links">
-        <a href="https://support.google.com/youtube/answer/12948118" target="_blank" rel="noreferrer">YouTube 모바일 촬영 안내</a>
-        <a href="https://support.google.com/youtube/answer/13616979" target="_blank" rel="noreferrer">YouTube 업로드 일정 안내</a>
-        <a href="https://www.facebook.com/business/ads/facebook-instagram-reels-ads" target="_blank" rel="noreferrer">Meta Reels 광고 안내</a>
-        <a href="https://www.facebook.com/help/instagram/402084904469945" target="_blank" rel="noreferrer">Instagram 음악 사용 안내</a>
-      </div>
-    </section>
+    </details>
   </main>
   <footer><p>기획 결과의 가격, 효능, 혜택 문구는 게시 전 사업자가 확인해야 합니다.</p></footer>
   <script src="absurdity-engine.js?v=20260928-10"></script>
