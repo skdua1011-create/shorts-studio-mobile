@@ -1,0 +1,6 @@
+const CACHE='shorts-studio-v13';
+const FILES=['./','index.html','styles.css','simulator.css','uploads.css?v=20260928-9','game-ui.css','codex-connect.css','redesign.css?v=20260928-12','absurdity-engine.js?v=20260928-10','app.js?v=20260928-11','game-ui.js','project-tools.js?v=20260928-10','pwa.js?v=20260928-13','app-icon.svg','manifest.webmanifest'];
+const CORE=FILES.map(file=>new URL(file,self.registration.scope).href);
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(()=>caches.match(event.request).then(hit=>hit||caches.match(new URL('index.html',self.registration.scope).href))))});
