@@ -111,6 +111,19 @@ function createPlan(data){
  return {k,hooks,visit,concept:`${k.device} 형식으로 고객의 문제를 과장한 뒤, ${data.product} 관련 ${k.proof} 장면을 활용해 해결하는 ${beat} 기획${comment}`,scenes,customer,point,transform};
 }
 
+async function finalizePlan(data,draft){
+ const reviewer=window.__scenarioReviewer__;
+ if(typeof reviewer!=='function')return {...draft,finalReview:{mode:'fallback',summary:'로컬 검토 연결이 없어 규칙 평가로 최종 확인함'}};
+ const brief={businessName:data.businessName,industry:data.industry.name,product:data.product,audience:data.audience||'',region:data.region||'',contactInfo:data.contactInfo||'',sellingPoint:data.sellingPointVerified==='yes'?data.sellingPoint:'',tone:data.tone,cta:data.cta,conceptComment:data.conceptComment||'',assets:data.assets.map(asset=>({role:asset.role,captureLabel:asset.captureLabel||'',width:asset.width||0,height:asset.height||0,duration:asset.duration||0}))};
+ const source={concept:draft.concept,hooks:draft.hooks,scenes:draft.scenes,device:draft.k.device,pain:draft.k.pain,proof:draft.k.proof,prop:draft.k.prop};
+ try{
+  const reviewed=await reviewer(brief,source);const expected=['0-3초','3-8초','8-15초','15-23초','23-27초','27-30초'];
+  const valid=typeof reviewed.concept==='string'&&Array.isArray(reviewed.hooks)&&reviewed.hooks.length===3&&Array.isArray(reviewed.scenes)&&reviewed.scenes.length===6&&reviewed.scenes.every((scene,index)=>Array.isArray(scene)&&scene.length===3&&scene[0]===expected[index]);
+  if(!valid)throw new Error('검토 결과 형식 오류');
+  return {...draft,concept:reviewed.concept,hooks:reviewed.hooks,scenes:reviewed.scenes,finalReview:{mode:'codex',summary:reviewed.reviewSummary||'최종 장면 구성을 확인함'}};
+ }catch{return {...draft,finalReview:{mode:'fallback',summary:'연결 검토를 완료하지 못해 규칙 평가로 최종 확인함'}}}
+}
+
 let simulatorTimer=null;
 
 function setupSimulator(data,plan){
@@ -161,6 +174,11 @@ function renderPlan(data,plan){
  const scenes=plan.scenes.map(s=>`<div class="scene"><time>${s[0]}</time><div><b>${s[1]}</b><p>${escapeHtml(s[2])}</p></div></div>`).join('');
  const transformPrompt=plan.transform?`\n외모 반전: ${plan.transform.label}. 동일 인물·동일 구도를 유지하고 얼굴 골격이나 피부색은 변경하지 않음. 변화는 헤어, 표정, 자세, 조명으로만 표현.`:'';
  const supportPrompt=ShortsAbsurdity.buildScenarioSupport(data,plan)+transformPrompt;
+ const evaluation=ShortsAbsurdity.evaluatePlan(data,plan);
+ const evaluationLabels={fun:'이야기의 재미',industryFit:'업태 적합성',shootability:'촬영 가능성'};
+ const evaluationCards=Object.entries(evaluation.dimensions).map(([key,item])=>`<article class="quality-card"><div><b>${evaluationLabels[key]}</b><strong>${item.score}점</strong></div><meter min="0" max="100" low="55" high="85" optimum="100" value="${item.score}">${item.score}점</meter><p>${escapeHtml(item.reasons[0]||'기본 구조를 확인함')}</p>${item.fixes.length?`<em>보완: ${escapeHtml(item.fixes[0])}</em>`:'<em>현재 구성 유지</em>'}</article>`).join('');
+ const finalReview=plan.finalReview||{mode:'fallback',summary:'규칙 평가로 최종 확인함'};
+ const finalReviewLabel=finalReview.mode==='codex'?'AI 최종 검토 완료':'자동 최종 검토 완료';
  const title=`${data.product} 때문에 ${plan.k.prop}까지 출동했습니다`;
  const locationTitle=data.region?`${data.region} ${data.product}`:`${data.industry.name} ${data.product}`;
  const channelGuide=data.platform==='Instagram Reels'
@@ -171,8 +189,9 @@ function renderPlan(data,plan){
  document.querySelector('#result').className='result';
  const simulatorButtons=plan.scenes.map((scene,index)=>`<button class="sim-scene-button" type="button"><span>${index+1}</span>${escapeHtml(scene[1])}</button>`).join('');
  const assetSummary=data.assets.length?`${data.assets.length}개 자료 분석 완료 · ${data.assets.map(asset=>asset.role).join(' · ')}`:'첨부 자료 없음 · 기본 예시 화면 사용';
- document.querySelector('#result').innerHTML=`<div class="result-head"><div><span class="badge">${escapeHtml(data.industry.name)} 전용 · ${escapeHtml(plan.k.device)}</span><h2 id="resultTitle">${escapeHtml(title)}</h2></div><button class="copy-btn" id="copyAll" type="button">전체 복사</button></div><p class="concept">${escapeHtml(plan.concept)}</p><div class="generation-limit"><b>제작 범위 안내</b><span>완성 영상을 자동 제작하지 않습니다. 촬영 시나리오, 장면별 생성 보조 입력, 불합격 판정 기준을 제공합니다.</span></div><section class="simulator" aria-labelledby="simulatorTitle"><div class="simulator-head"><div><span class="badge">콘티 프리뷰 · 30초</span><h3 id="simulatorTitle">촬영·편집 리듬 미리보기</h3></div><div class="simulator-controls"><button id="simPlay" type="button" aria-pressed="false">재생</button><button id="simRestart" type="button">처음부터</button></div></div><div class="simulator-body"><div class="phone"><div class="phone-stage" id="simStage"><img class="sim-media" id="simMedia" alt="현재 장면 미리보기"><div class="sim-vignette"></div><div class="sim-props" aria-hidden="true"><span class="sim-brush"><i></i></span><span class="sim-dryer"><i></i></span></div><span class="sim-sfx" id="simSfx"></span><div class="sim-flash" aria-hidden="true"></div><div class="safe-area" aria-hidden="true"></div><div class="platform-ui"><span>${escapeHtml(data.platform)}</span><b id="simClock">0.0 / 30.0초</b></div><div class="phone-copy"><small id="simSceneName"></small><strong id="simCaption"></strong><em>${escapeHtml(data.businessName)}</em></div><div class="sim-progress-track"><span id="simProgress"></span></div></div></div><div class="simulator-panel"><p>정지 이미지로 장면 순서와 편집 리듬만 점검하는 콘티입니다.</p><div class="sim-scene-list">${simulatorButtons}</div><div class="sim-note"><b>사용 기준</b><span>조리·제품·고객 반응은 직접 촬영을 우선하고, 생성 보조는 3~5초 단일 동작에만 사용합니다.</span></div></div></div></section><div class="timeline">${scenes}</div><div class="prompt-box"><h3>시나리오·촬영 보조 패키지</h3><pre id="videoPrompt">${escapeHtml(supportPrompt)}</pre></div><div class="publishing"><h3>${escapeHtml(data.platform)} 게시안</h3><ul><li>제목: ${escapeHtml(title)}</li><li>첫 댓글: "여러분이라면 바로 ${escapeHtml(data.cta)}한다 vs 한 번 더 본다"</li><li>검색 문구: 상호명, 업태, 지역명, 제품명을 자연스럽게 제목과 설명에 포함</li><li>검증: 게시 전 가격, 효능, 음원 권리, 인물 촬영 동의를 확인</li></ul></div>`;
+ document.querySelector('#result').innerHTML=`<div class="result-head"><div><span class="badge">${escapeHtml(data.industry.name)} 전용 · ${escapeHtml(plan.k.device)}</span><h2 id="resultTitle">${escapeHtml(title)}</h2></div><button class="copy-btn" id="copyAll" type="button">전체 복사</button></div><p class="concept">${escapeHtml(plan.concept)}</p><section class="quality-review" aria-labelledby="qualityReviewTitle"><div class="quality-review-head"><div><span>기획 품질 평가</span><h3 id="qualityReviewTitle">종합 ${evaluation.overall}점 · ${evaluation.level}</h3></div><small>입력 자료와 장면 구성 규칙에 따른 자체 점검</small></div><div class="quality-grid">${evaluationCards}</div></section><div class="generation-limit"><b>제작 범위 안내</b><span>완성 영상을 자동 제작하지 않습니다. 촬영 시나리오, 장면별 생성 보조 입력, 불합격 판정 기준을 제공합니다.</span></div><section class="simulator" aria-labelledby="simulatorTitle"><div class="simulator-head"><div><span class="badge">콘티 프리뷰 · 30초</span><h3 id="simulatorTitle">촬영·편집 리듬 미리보기</h3></div><div class="simulator-controls"><button id="simPlay" type="button" aria-pressed="false">재생</button><button id="simRestart" type="button">처음부터</button></div></div><div class="simulator-body"><div class="phone"><div class="phone-stage" id="simStage"><img class="sim-media" id="simMedia" alt="현재 장면 미리보기"><div class="sim-vignette"></div><div class="sim-props" aria-hidden="true"><span class="sim-brush"><i></i></span><span class="sim-dryer"><i></i></span></div><span class="sim-sfx" id="simSfx"></span><div class="sim-flash" aria-hidden="true"></div><div class="safe-area" aria-hidden="true"></div><div class="platform-ui"><span>${escapeHtml(data.platform)}</span><b id="simClock">0.0 / 30.0초</b></div><div class="phone-copy"><small id="simSceneName"></small><strong id="simCaption"></strong><em>${escapeHtml(data.businessName)}</em></div><div class="sim-progress-track"><span id="simProgress"></span></div></div></div><div class="simulator-panel"><p>정지 이미지로 장면 순서와 편집 리듬만 점검하는 콘티입니다.</p><div class="sim-scene-list">${simulatorButtons}</div><div class="sim-note"><b>사용 기준</b><span>조리·제품·고객 반응은 직접 촬영을 우선하고, 생성 보조는 3~5초 단일 동작에만 사용합니다.</span></div></div></div></section><div class="timeline">${scenes}</div><div class="prompt-box"><h3>시나리오·촬영 보조 패키지</h3><pre id="videoPrompt">${escapeHtml(supportPrompt)}</pre></div><div class="publishing"><h3>${escapeHtml(data.platform)} 게시안</h3><ul><li>제목: ${escapeHtml(title)}</li><li>첫 댓글: "여러분이라면 바로 ${escapeHtml(data.cta)}한다 vs 한 번 더 본다"</li><li>검색 문구: 상호명, 업태, 지역명, 제품명을 자연스럽게 제목과 설명에 포함</li><li>검증: 게시 전 가격, 효능, 음원 권리, 인물 촬영 동의를 확인</li></ul></div>`;
  document.querySelector('.concept').insertAdjacentHTML('afterend',`<div class="asset-plan"><b>첨부 자료 자동 배치</b><span>${escapeHtml(assetSummary)}</span></div>`);
+ document.querySelector('.asset-plan').insertAdjacentHTML('afterend',`<div class="final-review ${finalReview.mode}"><b>${finalReviewLabel}</b><span>${escapeHtml(finalReview.summary)}</span></div>`);
  document.querySelector('.asset-plan').insertAdjacentHTML('beforebegin',`<div class="hook-options"><b>첫 3초 후킹 3안</b>${plan.hooks.map((hook,index)=>`<button type="button"><span>${index+1}</span>${escapeHtml(hook)}</button>`).join('')}</div>`);
  document.querySelector('.sim-props').innerHTML=`<span class="sim-object-label">${escapeHtml(plan.k.prop)}</span>`;
  document.querySelector('#simMedia').insertAdjacentHTML('afterend','<video class="sim-video" id="simVideo" muted playsinline loop></video>');
@@ -184,10 +203,12 @@ function renderPlan(data,plan){
  setupSimulator(data,plan);
 }
 
-document.querySelector('#briefForm').addEventListener('submit',event=>{
+document.querySelector('#briefForm').addEventListener('submit',async event=>{
  event.preventDefault(); const form=new FormData(event.currentTarget); const raw=Object.fromEntries(form.entries()); const error=document.querySelector('#formError');
  if(!raw.businessName.trim()||!raw.product.trim()){error.textContent='상호명과 홍보 제품 또는 서비스를 입력하세요.';return}
- error.textContent=''; const industry=industries.find(i=>i.id===raw.industry); const data={...raw,businessName:raw.businessName.trim(),product:raw.product.trim(),sellingPoint:raw.sellingPoint.trim(),audience:raw.audience.trim(),conceptComment:(raw.conceptComment||'').trim(),industry,assets:[...uploadedAssets]}; renderPlan(data,createPlan(data)); document.dispatchEvent(new CustomEvent('plan:created')); document.querySelector('#result').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+ error.textContent=''; const industry=industries.find(i=>i.id===raw.industry); const data={...raw,businessName:raw.businessName.trim(),product:raw.product.trim(),sellingPoint:raw.sellingPoint.trim(),audience:raw.audience.trim(),conceptComment:(raw.conceptComment||'').trim(),industry,assets:[...uploadedAssets]};
+ const button=event.currentTarget.querySelector('.generate');const original=button.textContent;button.disabled=true;button.textContent='AI 최종 검토 중';document.querySelector('#result').className='result reviewing';document.querySelector('#result').innerHTML='<div class="reviewing-state"><b>시나리오 최종 검토 중</b><span>재미, 업태 적합성, 촬영 가능성을 확인하고 있습니다.</span></div>';
+ const plan=await finalizePlan(data,createPlan(data));button.disabled=false;button.textContent=original;renderPlan(data,plan);document.dispatchEvent(new CustomEvent('plan:created')); document.querySelector('#result').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
 });
 
 window.__SHORTS_KB__=knowledgeBase;

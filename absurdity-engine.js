@@ -48,6 +48,48 @@
   ];
  }
 
+ function evaluatePlan(data,plan){
+  const scenes=Array.isArray(plan.scenes)?plan.scenes:[];
+  const sceneText=scenes.map(scene=>scene.join(' ')).join(' ');
+  const prop=plan.k?.prop||'';const pain=plan.k?.pain||'';const proof=plan.k?.proof||'';const device=plan.k?.device||'';
+  const count=text=>text?sceneText.split(text).length-1:0;
+  const keywords=text=>String(text||'').split(/[\s,·.]+/).map(word=>word.replace(/(에서|으로|에게|까지|부터|처럼|하고|하며|이다|한다|되는|하는|을|를|이|가|은|는|과|와|의)$/,'')).filter(word=>word.length>=2);
+  const overlaps=text=>keywords(text).some(word=>sceneText.includes(word));
+  const keywordCount=text=>Math.max(0,...keywords(text).map(word=>sceneText.split(word).length-1));
+  const level=score=>score>=85?'우수':score>=70?'적합':score>=55?'보완 필요':'재작성 권장';
+  const make=(score,reasons,fixes)=>({score:Math.max(0,Math.min(100,Math.round(score))),level:level(score),reasons,fixes});
+  let fun=15;const funReasons=[];const funFixes=[];
+  if(device){fun+=15;funReasons.push(`${device} 상황극 장치를 사용함`)}
+  const comicSignals=['첫 1초','무표정','정적','반전','황당','비정상','진지','회의','딸깍'].filter(word=>sceneText.includes(word));
+  if(comicSignals.length>=3){fun+=25;funReasons.push(`웃음 장치 ${comicSignals.slice(0,3).join('·')}를 반복함`)}else if(comicSignals.length){fun+=12;funFixes.push('정적·무표정·예상 밖 행동을 최소 2개 장면에 추가')}else funFixes.push('설명보다 먼저 보이는 비정상 행동을 첫 장면에 추가');
+  if(count(prop)>=3||keywordCount(prop)>=3){fun+=20;funReasons.push('도입 소품을 중간과 결말에서 회수함')}else funFixes.push('도입 소품을 갈등과 결말에 다시 등장시켜 회수');
+  if(new Set(scenes.map(scene=>scene[1])).size>=5){fun+=10;funReasons.push('장면 역할이 단계별로 구분됨')}
+  if(/["“”]/.test(sceneText)&&/(경보음|효과음|정적|찰칵|띠링)/.test(sceneText)){fun+=15;funReasons.push('대사와 소리 반전이 함께 배치됨')}else funFixes.push('짧은 대사와 생활 효과음의 대비를 추가');
+  const comment=String(data.conceptComment||'').trim();
+  if(!comment){fun+=10}else{const tokens=comment.split(/[\s,·.]+/).filter(token=>token.length>=2);if(tokens.some(token=>sceneText.includes(token))){fun+=15;funReasons.push('추가 콘셉트가 실제 장면 행동에 반영됨')}else{fun-=15;funFixes.push('추가 콘셉트를 설명란이 아니라 장면 행동과 대사에 직접 반영')}}
+  let fit=10;const fitReasons=[];const fitFixes=[];
+  if(pain&&sceneText.includes(pain)){fit+=25;fitReasons.push('업태별 고객 문제를 갈등 장면에 사용함')}else if(pain&&overlaps(pain)){fit+=15;fitReasons.push('업태별 고객 문제의 핵심 소재를 반영함')}else fitFixes.push('해당 업태 고객이 실제로 겪는 문제를 갈등 장면에 명시');
+  if(proof&&sceneText.includes(proof)){fit+=25;fitReasons.push('업태별 증거 장면을 포함함')}else if((proof&&overlaps(proof))||/(굽|뒤집|조리|근접 촬영|시술|작업|제조|완성|과정)/.test(sceneText)){fit+=18;fitReasons.push('제품·서비스의 실제 작업 행동을 증거로 사용함')}else fitFixes.push('서비스 과정이나 결과를 확인할 수 있는 증거 장면을 추가');
+  if(count(data.product)>=2||keywordCount(data.product)>=2){fit+=20;fitReasons.push('홍보 제품·서비스가 여러 장면에 연결됨')}else fitFixes.push('제품·서비스를 문제 장면과 해결 장면에 각각 연결');
+  if(count(prop)>=2||keywordCount(prop)>=2){fit+=10;fitReasons.push('업태 소품이 이야기의 중심 장치로 사용됨')}else fitFixes.push('업태를 식별할 수 있는 실제 소품을 반복 사용');
+  if(data.businessName&&sceneText.includes(data.businessName)){fit+=10;fitReasons.push('실제 상호와 현장 장면을 연결함')}else fitFixes.push('증거 또는 마지막 장면에 실제 상호를 연결');
+  let shoot=20;const shootReasons=[];const shootFixes=[];
+  const expected=['0-3초','3-8초','8-15초','15-23초','23-27초','27-30초'];
+  if(scenes.length===6&&scenes.every((scene,index)=>scene[0]===expected[index])){shoot+=20;shootReasons.push('30초를 6개 촬영 구간으로 분할함')}else shootFixes.push('전체 시간을 중복 없는 6개 촬영 구간으로 재정리');
+  const assets=Array.isArray(data.assets)?data.assets:[];const labels=new Set(assets.map(asset=>asset.captureLabel).filter(Boolean));
+  const ready=[labels.has('매장 외관')||labels.has('매장 내부'),labels.has('실제 제품'),labels.has('조리 과정'),labels.has('출연자 기준')].filter(Boolean).length;
+  shoot+=ready*6.25;
+  if(ready===4)shootReasons.push('매장·제품·과정·출연자 기준 자료를 모두 확보함');else shootFixes.push(`필수 촬영 자료 ${4-ready}종을 추가 확보`);
+  const longScenes=scenes.filter(scene=>String(scene[2]||'').length>190).length;
+  if(longScenes===0){shoot+=15;shootReasons.push('장면별 행동 설명이 촬영 단위로 제한됨')}else{shoot+=Math.max(0,15-longScenes*4);shootFixes.push(`설명이 긴 장면 ${longScenes}개를 단일 행동으로 축소`)}
+  const complex=(sceneText.match(/동시에|교차 편집|3개|다음 순간/g)||[]).length;
+  if(complex<=1){shoot+=10;shootReasons.push('복합 동작이 과도하지 않음')}else{shoot+=4;shootFixes.push('한 장면에 섞인 복수 행동과 교차 편집을 분리')}
+  if((proof&&sceneText.includes(proof))||/(굽|뒤집|조리|근접 촬영|시술|작업|제조|완성|과정)/.test(sceneText)){shoot+=10;shootReasons.push('직접 촬영할 증거 장면이 지정됨')}
+  const dimensions={fun:make(fun,funReasons,funFixes),industryFit:make(fit,fitReasons,fitFixes),shootability:make(shoot,shootReasons,shootFixes)};
+  const overall=Math.round((dimensions.fun.score+dimensions.industryFit.score+dimensions.shootability.score)/3);
+  return {overall,level:level(overall),dimensions};
+ }
+
  function buildFlowPrompt(data,plan){
   const strong=Number(data.tone)===3;
   const contract=strong?`\n병맛 연출 계약:\n${strongContract().map((item,i)=>`${i+1}) ${item}`).join('\n')}`:'';
@@ -77,5 +119,5 @@
   return `시나리오·촬영 보조 패키지\n업태: ${data.industry.name}\n제품·서비스: ${data.product}\n운영 원칙: 본 결과는 완성 영상을 보장하지 않으며, 촬영 시나리오와 장면별 생성 보조에만 사용. 실제 제품 형태·상호·가격·혜택은 사업자가 확인한 자료로 후반 편집에서 합성.\n${identity}\n\n사용 순서\n1) 기준 이미지를 먼저 촬영함\n2) 직접 촬영 가능한 조리·제품·반응 장면을 우선 확보함\n3) 생성 보조는 한 번에 1개 동작, 3~5초 분량으로만 사용함\n4) 각 결과를 아래 불합격 기준으로 판정함\n5) 통과 장면만 편집하고 자막·음향·상호를 후반 합성함\n\n${cards}\n\n불합격 기준\n- 얼굴·의상·소품·음식 형태가 기준 이미지와 다름\n- 손가락·집게·접시·조리도구의 개수나 형태가 변함\n- 요청하지 않은 가면·글자·로고·인물이 등장함\n- 한 장면에 2개 이상의 핵심 행동이 섞임\n- 장면의 웃음 장치가 사라지고 평범한 제품 광고가 됨\n- 실제 판매 제품과 다른 모양·양·조리 상태가 등장함\n\n재시도 원칙\n불합격 장면 전체를 길게 다시 만들지 않음. 해당 장면을 3~5초 단일 동작으로 줄이고 기준 이미지를 다시 지정한 뒤 1회 재시도. 두 번째도 불합격이면 직접 촬영 장면으로 교체.`;
  }
 
- return {strongDevices,industryKeywords,matchIndustryFromText,chooseKnowledge,strongContract,createStrongScenes,buildFlowPrompt,buildScenarioSupport,withParticle};
+ return {strongDevices,industryKeywords,matchIndustryFromText,chooseKnowledge,strongContract,createStrongScenes,evaluatePlan,buildFlowPrompt,buildScenarioSupport,withParticle};
 });

@@ -6,6 +6,7 @@ const codexOutput=document.querySelector('#codexOutput');
 let reviewedRequest='';
 let reviewId='';
 let codexToken='';
+const publicReviewBase='https://shorts-scenario-review.skdua1011.workers.dev';
 
 async function codexCall(path,payload){
  const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Codex-Token':codexToken},body:JSON.stringify(payload)});
@@ -14,12 +15,42 @@ async function codexCall(path,payload){
  return data;
 }
 
-fetch('/codex/status').then(response=>response.json()).then(data=>{
- codexToken=data.token||'';
- codexState.textContent=data.connected?'Codex 연결됨':'Codex 연결 필요';
- codexState.className=`connection-state ${data.connected?'online':'offline'}`;
- codexPreview.disabled=!data.connected;
-}).catch(()=>{codexState.textContent='전용 실행기로 다시 시작 필요';codexState.className='connection-state offline';codexPreview.disabled=true});
+async function publicScenarioReview(brief,plan){
+ const response=await fetch(`${publicReviewBase}/review`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({brief,plan})});
+ const data=await response.json();
+ if(!response.ok)throw new Error(data.error||'최종 검토를 완료하지 못했습니다.');
+ return data;
+}
+
+async function connectScenarioReviewer(){
+ try{
+  const response=await fetch('/codex/status');
+  if(!response.ok)throw new Error('local unavailable');
+  const data=await response.json();
+  if(!data.connected)throw new Error('local disconnected');
+  codexToken=data.token||'';
+  codexState.textContent='로컬 최종 검토 연결됨';
+  codexState.className='connection-state online';
+  codexPreview.disabled=false;
+  window.__scenarioReviewer__=async(brief,plan)=>codexCall('/codex/scenario-review',{brief,plan});
+  return;
+ }catch(error){
+  codexPreview.disabled=true;
+ }
+ try{
+  const response=await fetch(`${publicReviewBase}/status`);
+  if(!response.ok)throw new Error('public unavailable');
+  codexState.textContent='공개 최종 검토 연결됨';
+  codexState.className='connection-state online';
+  window.__scenarioReviewer__=publicScenarioReview;
+ }catch(error){
+  codexState.textContent='최종 검토 연결 필요';
+  codexState.className='connection-state offline';
+  window.__scenarioReviewer__=null;
+ }
+}
+
+connectScenarioReviewer();
 
 codexPreview.addEventListener('click',async()=>{
  const request=codexRequest.value.trim();if(request.length<5){codexOutput.textContent='수정 요청을 5자 이상 입력하세요.';return}
